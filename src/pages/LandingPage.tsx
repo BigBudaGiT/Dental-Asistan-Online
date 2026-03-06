@@ -106,7 +106,7 @@ const LandingPage = () => {
               className="text-4xl md:text-6xl font-extrabold text-foreground leading-tight mb-6"
             >
               Gestiona tus citas por{" "}
-              <span className="gradient-text">WhatsApp</span>{" "}
+              <span className="bg-gradient-to-r from-emerald-500 to-green-600 text-transparent bg-clip-text">WhatsApp</span>{" "}
               con inteligencia artificial
             </motion.h1>
             <motion.p
