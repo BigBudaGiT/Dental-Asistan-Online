@@ -204,7 +204,17 @@ const LandingPage = () => {
             <div className="w-6 h-6 rounded gradient-hero flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-xs">iA</span>
             </div>
-            <span className="text-sm font-medium text-muted-foreground">i-asistan © 2026</span>
+            <span className="text-sm font-medium text-muted-foreground">
+              i-asistan © 2026 creado por{" "}
+              <a
+                href="https://www.bigbuda.com.ar"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-primary transition-colors hover:underline"
+              >
+                www.bigbuda.com.ar
+              </a>
+            </span>
           </div>
           <p className="text-sm text-muted-foreground">
             Automatiza tu negocio con inteligencia artificial.
