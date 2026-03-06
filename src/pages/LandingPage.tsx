@@ -64,7 +64,7 @@ const LandingPage = () => {
               </Button>
             </Link>
             <Link to="/auth?mode=register">
-              <Button size="sm">Empezar Ahora</Button>
+              <Button size="sm">Crear Cuenta</Button>
             </Link>
           </div>
         </div>
@@ -107,12 +107,12 @@ const LandingPage = () => {
             <motion.div custom={3} variants={fadeUp} className="flex items-center justify-center gap-4">
               <Link to="/auth?mode=register">
                 <Button size="lg" className="px-8 text-base font-semibold">
-                  Empezar Ahora
+                  Crear Cuenta
                 </Button>
               </Link>
               <Link to="/auth">
                 <Button variant="outline" size="lg" className="px-8 text-base">
-                  Ver Demo
+                  Iniciar Sesión
                 </Button>
               </Link>
             </motion.div>
@@ -176,7 +176,7 @@ const LandingPage = () => {
           </p>
           <Link to="/auth?mode=register">
             <Button size="lg" variant="secondary" className="px-8 text-base font-semibold">
-              Crear Cuenta Gratis
+              Crear Cuenta
             </Button>
           </Link>
         </motion.div>
