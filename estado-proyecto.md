@@ -52,20 +52,20 @@ A continuación se presenta una hoja de ruta dividida por áreas clave para comp
 - [x] **Configurar API de WhatsApp:** Configurar conexion real con API de WhatsApp Twilio (Envío y recepción de mensajes).
   - *Novedad:* Soporte en el webhook para **archivos multimedia (imágenes)**, descargándolas y guardándolas en Supabase Storage (`whatsapp-media`).
   - *Novedad:* **Auto-respuesta automática** de advertencia para tipos de archivos aún no soportados (audio, documentos, etc.).
-- [ ] **Integrar LLM (OpenAI/Gemini/Claude):** Programar el agente conversacional con instrucciones (prompt) para:
+- [x] **Integrar LLM (OpenAI/Gemini/Claude):** Programar el agente conversacional con instrucciones (prompt) para:
   - Saludar y preguntar el motivo.
   - Verificar disponibilidad leyendo la base de datos de Supabase.
   - Agendar el turno (Insertar en tabla `appointments`).
-  - Responder dudas frecuentes de la clínica.
-- [ ] **Webhook de Mensajes:** Conectar WhatsApp -> Edge Function -> LLM -> DB -> Respuesta a WhatsApp.
+  - Responder dudas frecuentes del negocio.
+- [x] **Webhook de Mensajes:** Conectar WhatsApp -> Edge Function -> LLM -> DB -> Respuesta a WhatsApp.
 
 ### 5. Notificaciones y Recordatorios
-- [ ] **Cron Jobs:** Configurar tareas programadas (Supabase pg_cron o externos) para buscar turnos próximos (ej. en 24hs).
-- [ ] **Envío de Recordatorios:** Crear flujo para enviar mensaje automático de confirmación de asistencia por WhatsApp.
-- [ ] **Manejo de Cancelaciones:** Actualizar el estado de la cita si el usuario responde "Cancelar" a un recordatorio.
+- [x] **Cron Jobs:** Configurar tareas programadas (Supabase pg_cron o externos) para buscar turnos próximos (ej. en 24hs).
+- [x] **Envío de Recordatorios:** Crear flujo para enviar mensaje automático de confirmación de asistencia por WhatsApp.
+- [x] **Manejo de Cancelaciones:** Actualizar el estado de la cita si el usuario responde "Cancelar" a un recordatorio (vía fast-path sin gastar cuota IA).
 
 ### 6. Producción y Despliegue
-- [ ] **Variables de Entorno:** Configurar correctamente `.env` y `.env.production`.
-- [ ] **Deploy Frontend:** Desplegar la aplicación en Vercel, Netlify o Supabase Hosting.
+- [x] **Variables de Entorno:** Configurar correctamente `.env` y `.env.production`.
+- [x] **Deploy Frontend:** Desplegar la aplicación en Vercel, Netlify o Supabase Hosting.
 - [ ] **Aprobación Meta:** Completar la verificación de la empresa en Meta para usar WhatsApp API sin restricciones de testeo.
 - [ ] **Testing Final:** Realizar pruebas de flujo completo (E2E) simulando pacientes desde WhatsApp y uso del dashboard.
