@@ -62,7 +62,7 @@ const AppointmentsTab = () => {
   const [isUploading, setIsUploading] = useState(false);
 
   const MAX_FILES = 5;
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const MAX_FILE_SIZE = 6 * 1024 * 1024; // 6MB
   const ALLOWED_TYPES = [
     "image/jpeg", "image/png", "image/bmp", "image/tiff", "image/webp",
     "application/pdf", "application/msword",
@@ -168,7 +168,7 @@ const AppointmentsTab = () => {
         return false;
       }
       if (f.size > MAX_FILE_SIZE) {
-        toast({ title: "Archivo muy pesado", description: `${f.name} supera los 10MB permitidos.`, variant: "destructive" });
+        toast({ title: "Archivo muy pesado", description: `${f.name} supera los 6MB permitidos.`, variant: "destructive" });
         return false;
       }
       return true;
