@@ -73,7 +73,7 @@ const AuthPage = () => {
       >
         <div className="text-center mb-8">
           <div className="w-12 h-12 rounded-xl gradient-hero flex items-center justify-center mx-auto mb-4">
-            <MessageCircle className="w-6 h-6 text-primary-foreground" />
+            <span className="text-primary-foreground font-bold text-xl">iA</span>
           </div>
           <h1 className="text-2xl mt-2 font-bold">
             <span className="bg-gradient-to-r from-fuchsia-500 to-pink-500 text-transparent bg-clip-text">
