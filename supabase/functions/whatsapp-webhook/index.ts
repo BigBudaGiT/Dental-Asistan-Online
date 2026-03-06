@@ -58,6 +58,40 @@ serve(async (req: any) => {
             return new Response("No API Key", { status: 500 });
         }
 
+        // --- FAST-PATH CANCELACIÓN DIRECTA ---
+        const normalizedBody = body.trim().toLowerCase();
+
+        // Match exact or with slight punctuation (like "cancelar.", "cancelar!")
+        if (normalizedBody.replace(/[.,!]/g, '') === "cancelar") {
+            console.log("Fast-path: Usuario quiere cancelar");
+            const { data: aptsToCancel } = await supabase
+                .from("appointments")
+                .select("id")
+                .eq("phone_number", phoneNumber)
+                .in("status", ["pending", "confirmed"])
+                .gte("appointment_date", new Date().toISOString())
+                .order("appointment_date", { ascending: true })
+                .limit(1);
+
+            if (aptsToCancel && aptsToCancel.length > 0) {
+                const aptId = aptsToCancel[0].id;
+                await supabase.from("appointments").update({ status: "cancelled" }).eq("id", aptId);
+
+                const reply = "✅ Tu próximo turno ha sido cancelado exitosamente. Si necesitas otro, solo pídemelo.";
+                await supabase.from("messages").insert({ phone_number: phoneNumber, message_content: reply, sender: "bot" });
+                await sendWhatsApp(reply);
+
+                return new Response("<Response/>", { headers: { "Content-Type": "text/xml" } });
+            } else {
+                const reply = "No encontré ningún turno próximo a tu nombre para cancelar.";
+                await supabase.from("messages").insert({ phone_number: phoneNumber, message_content: reply, sender: "bot" });
+                await sendWhatsApp(reply);
+
+                return new Response("<Response/>", { headers: { "Content-Type": "text/xml" } });
+            }
+        }
+        // --- FIN FAST-PATH ---
+
         const { data: settings } = await supabase.from("clinic_settings").select("*").single();
         const timezone = settings?.timezone || "America/Argentina/Buenos_Aires";
         const rawWorkingHours = settings?.working_hours || "[]";
