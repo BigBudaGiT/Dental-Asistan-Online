@@ -6,7 +6,7 @@ import { Plus, Trash2, Edit2, Save, X, Phone, User, Search } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 interface Contact {
     id: string;
@@ -142,6 +142,8 @@ const ContactsTab = () => {
                         <div className="relative w-64">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <Input
+                                id="search-contacts"
+                                name="search-contacts"
                                 placeholder="Buscar nombre o nro..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
@@ -206,11 +208,16 @@ const ContactsTab = () => {
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>{isEditMode ? "Editar Contacto" : "Añadir Nuevo Contacto"}</DialogTitle>
+                        <DialogDescription className="sr-only">
+                            Formulario para añadir o editar un contacto en tu agenda.
+                        </DialogDescription>
                     </DialogHeader>
                     <div className="py-4 space-y-4">
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Teléfono (ej. +5491123456789)</label>
                             <Input
+                                id="contact-phone"
+                                name="contact-phone"
                                 placeholder="Número con código de país"
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
@@ -219,6 +226,8 @@ const ContactsTab = () => {
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Nombre Completo</label>
                             <Input
+                                id="contact-name"
+                                name="contact-name"
                                 placeholder="Ej. Juan Pérez"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}

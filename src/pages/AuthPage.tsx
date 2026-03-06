@@ -55,7 +55,7 @@ const AuthPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
       <div className="absolute inset-0 gradient-soft" />
-      
+
       <div className="absolute top-6 left-6 z-10">
         <Link to="/">
           <Button variant="ghost" size="sm" className="gap-2">
@@ -106,7 +106,7 @@ const AuthPage = () => {
                     <Label htmlFor="name" className="text-sm font-medium">Nombre</Label>
                     <div className="relative mt-1.5">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input id="name" placeholder="Dr. Juan García" value={name} onChange={(e) => setName(e.target.value)} className="pl-10" />
+                      <Input id="name" name="name" placeholder="Dr. Juan García" value={name} onChange={(e) => setName(e.target.value)} className="pl-10" />
                     </div>
                   </motion.div>
                 )}
@@ -115,14 +115,14 @@ const AuthPage = () => {
                 <Label htmlFor="email" className="text-sm font-medium">Correo electrónico</Label>
                 <div className="relative mt-1.5">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input id="email" type="email" placeholder="doctor@clinica.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" />
+                  <Input id="email" name="email" type="email" placeholder="doctor@clinica.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" />
                 </div>
               </div>
               <div>
                 <Label htmlFor="password" className="text-sm font-medium">Contraseña</Label>
                 <div className="relative mt-1.5">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10" />
+                  <Input id="password" name="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10" />
                 </div>
               </div>
               <Button type="submit" className="w-full font-semibold" disabled={loading}>

@@ -150,25 +150,25 @@ const SettingsTab = () => {
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <Label className="text-sm font-medium">Nombre de la Clínica</Label>
-              <Input className="mt-1.5" value={form.clinic_name} onChange={(e) => handleChange("clinic_name", e.target.value)} />
+              <Input id="clinic-name" name="clinic-name" className="mt-1.5" value={form.clinic_name} onChange={(e) => handleChange("clinic_name", e.target.value)} />
             </div>
             <div>
               <Label className="text-sm font-medium">Teléfono</Label>
-              <Input className="mt-1.5" value={form.clinic_phone} onChange={(e) => handleChange("clinic_phone", e.target.value)} />
+              <Input id="clinic-phone" name="clinic-phone" className="mt-1.5" value={form.clinic_phone} onChange={(e) => handleChange("clinic_phone", e.target.value)} />
             </div>
           </div>
           <div>
             <Label className="text-sm font-medium">Dirección</Label>
-            <Input className="mt-1.5" value={form.clinic_address} onChange={(e) => handleChange("clinic_address", e.target.value)} />
+            <Input id="clinic-address" name="clinic-address" className="mt-1.5" value={form.clinic_address} onChange={(e) => handleChange("clinic_address", e.target.value)} />
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <Label className="text-sm font-medium">Correo Electrónico</Label>
-              <Input className="mt-1.5" value={form.clinic_email} onChange={(e) => handleChange("clinic_email", e.target.value)} />
+              <Input id="clinic-email" name="clinic-email" className="mt-1.5" value={form.clinic_email} onChange={(e) => handleChange("clinic_email", e.target.value)} />
             </div>
             <div>
               <Label className="text-sm font-medium">Tono de la IA</Label>
-              <Input className="mt-1.5" placeholder="Ej. Profesional y amable..." value={form.ai_tone} onChange={(e) => handleChange("ai_tone", e.target.value)} />
+              <Input id="ai-tone" name="ai-tone" className="mt-1.5" placeholder="Ej. Profesional y amable..." value={form.ai_tone} onChange={(e) => handleChange("ai_tone", e.target.value)} />
             </div>
           </div>
           <div>
@@ -251,6 +251,8 @@ const SettingsTab = () => {
           </div>
           <div className="flex gap-2">
             <Input
+              id="new-service"
+              name="new-service"
               placeholder="Nuevo servicio... (Ej. Limpieza facial)"
               value={newService}
               onChange={(e) => setNewService(e.target.value)}
@@ -288,6 +290,8 @@ const SettingsTab = () => {
           <div className="pt-2 border-t mt-4">
             <Label className="text-sm font-medium pt-2 block">URL del Webhook (Twilio)</Label>
             <Input
+              id="whatsapp-webhook-url"
+              name="whatsapp-webhook-url"
               className="mt-1.5"
               placeholder="https://tu-proyecto.supabase.co/functions/v1/twilio-webhook-whatsapp"
               value={form.whatsapp_webhook_url}

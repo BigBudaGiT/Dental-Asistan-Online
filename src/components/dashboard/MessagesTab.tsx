@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -224,7 +224,7 @@ const MessagesTab = () => {
         <div className="p-3 border-b">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Buscar por teléfono..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 h-9 text-sm" />
+            <Input id="search-messages" name="search-messages" placeholder="Buscar por teléfono..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 h-9 text-sm" />
           </div>
         </div>
         <ScrollArea className="flex-1">
@@ -336,6 +336,8 @@ const MessagesTab = () => {
                 <Smile className="w-5 h-5 text-muted-foreground" />
               </Button>
               <Input
+                id="reply-message"
+                name="reply-message"
                 placeholder="Escribe un mensaje..."
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
@@ -359,6 +361,9 @@ const MessagesTab = () => {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Guardar Contacto</DialogTitle>
+            <DialogDescription className="sr-only">
+              Asigna un nombre a este número de teléfono para guardarlo en tus contactos.
+            </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <div className="mb-4">
@@ -368,6 +373,8 @@ const MessagesTab = () => {
             <div>
               <p className="text-sm text-foreground mb-1">Nombre del paciente</p>
               <Input
+                id="new-contact-name"
+                name="new-contact-name"
                 placeholder="Ej. Juan Pérez"
                 value={newContactName}
                 onChange={(e) => setNewContactName(e.target.value)}

@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -270,11 +271,16 @@ const AppointmentsTab = () => {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Editar Cita</DialogTitle>
+            <DialogDescription className="sr-only">
+              Modifica los detalles, fecha y estado de esta cita.
+            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <label className="text-right text-sm font-medium">Paciente</label>
               <Input
+                id="edit-patient-name"
+                name="edit-patient-name"
                 value={editForm.patient_name}
                 onChange={(e) => setEditForm({ ...editForm, patient_name: e.target.value })}
                 className="col-span-3"
@@ -283,6 +289,8 @@ const AppointmentsTab = () => {
             <div className="grid grid-cols-4 items-center gap-4">
               <label className="text-right text-sm font-medium">Teléfono</label>
               <Input
+                id="edit-phone-number"
+                name="edit-phone-number"
                 value={editForm.phone_number}
                 onChange={(e) => setEditForm({ ...editForm, phone_number: e.target.value })}
                 className="col-span-3"
@@ -291,6 +299,8 @@ const AppointmentsTab = () => {
             <div className="grid grid-cols-4 items-center gap-4">
               <label className="text-right text-sm font-medium">Día</label>
               <Input
+                id="edit-appointment-date"
+                name="edit-appointment-date"
                 type="date"
                 value={editForm.appointment_date}
                 onChange={(e) => setEditForm({ ...editForm, appointment_date: e.target.value })}
@@ -350,6 +360,8 @@ const AppointmentsTab = () => {
             <div className="grid grid-cols-4 items-start gap-4">
               <label className="text-right text-sm font-medium pt-2">Notas</label>
               <Textarea
+                id="edit-notes"
+                name="edit-notes"
                 placeholder="Notas adicionales (alergias, observaciones, etc.)..."
                 className="col-span-3 resize-none"
                 value={editForm.notes}
@@ -384,6 +396,9 @@ const AppointmentsTab = () => {
               <Trash2 className="w-5 h-5" />
               Confirmar Eliminación
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              Confirma si deseas eliminar definitivamente esta cita de la agenda.
+            </DialogDescription>
           </DialogHeader>
           <div className="py-2">
             <p className="text-sm text-foreground">
