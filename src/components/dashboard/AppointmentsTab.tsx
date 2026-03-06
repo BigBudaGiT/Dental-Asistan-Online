@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calendar, Clock, XCircle, CheckCircle2, Loader2, Trash2, Plus } from "lucide-react";
+import { Calendar, Clock, XCircle, CheckCircle2, Loader2, Trash2, Plus, FileText, Paperclip, Download, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -56,6 +56,22 @@ const AppointmentsTab = () => {
     notes: "",
   });
 
+  // Attachments State
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [existingFiles, setExistingFiles] = useState<any[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const MAX_FILES = 5;
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const ALLOWED_TYPES = [
+    "image/jpeg", "image/png", "image/bmp", "image/tiff", "image/webp",
+    "application/pdf", "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // docx
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // xlsx
+    "text/xml", "application/xml"
+  ];
+
   const { data: appointments = [] } = useQuery({
     queryKey: ["appointments"],
     queryFn: async () => {
@@ -100,7 +116,120 @@ const AppointmentsTab = () => {
       notes: apt.notes || "",
     });
     setEditingApt(apt);
+    setSelectedFiles([]);
+    loadExistingFiles(apt.id);
   };
+
+  const loadExistingFiles = async (appointmentId: string) => {
+    try {
+      const { data, error } = await supabase.storage.from("attachments").list(appointmentId);
+      if (error) {
+        console.error("Error loading files:", error);
+        setExistingFiles([]);
+        return;
+      }
+
+      // Filter out weird empty hidden files sometimes created by storage
+      const validFiles = data?.filter(f => f.name !== ".emptyFolderPlaceholder") || [];
+
+      // Get public URLs for each file
+      const filesWithUrls = validFiles.map(file => {
+        const { data: urlData } = supabase.storage.from("attachments").getPublicUrl(`${appointmentId}/${file.name}`);
+        return {
+          ...file,
+          publicUrl: urlData.publicUrl
+        };
+      });
+
+      setExistingFiles(filesWithUrls);
+    } catch (err) {
+      console.error(err);
+      setExistingFiles([]);
+    }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    const files = Array.from(e.target.files);
+
+    // Check total count
+    if (selectedFiles.length + existingFiles.length + files.length > MAX_FILES) {
+      toast({ title: "Límite excedido", description: `Solo puedes adjuntar un máximo de ${MAX_FILES} archivos por cita.`, variant: "destructive" });
+      return;
+    }
+
+    // Validate type and size
+    const validFiles = files.filter(file => {
+      // Cast file to standard File to resolve TS unknown errors inside the array.from
+      const f = file as File;
+      if (!ALLOWED_TYPES.includes(f.type)) {
+        toast({ title: "Archivo no soportado", description: `${f.name} tiene un formato no válido. Usa imágenes, PDF, Word o Excel.`, variant: "destructive" });
+        return false;
+      }
+      if (f.size > MAX_FILE_SIZE) {
+        toast({ title: "Archivo muy pesado", description: `${f.name} supera los 10MB permitidos.`, variant: "destructive" });
+        return false;
+      }
+      return true;
+    }) as File[];
+
+    setSelectedFiles(prev => [...prev, ...validFiles]);
+  };
+
+  const removeSelectedFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const deleteExistingFile = async (fileName: string) => {
+    if (!editingApt) return;
+    try {
+      const { error } = await supabase.storage.from("attachments").remove([`${editingApt.id}/${fileName}`]);
+      if (error) throw error;
+
+      toast({ title: "Archivo eliminado", description: `El archivo ${fileName} ha sido borrado.` });
+      setExistingFiles(prev => prev.filter(f => f.name !== fileName));
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Error", description: "No se pudo eliminar el archivo.", variant: "destructive" });
+    }
+  };
+
+  const uploadFiles = async (appointmentId: string) => {
+    if (selectedFiles.length === 0) return;
+
+    setIsUploading(true);
+    let successCount = 0;
+
+    try {
+      for (const file of selectedFiles) {
+        // Clean filename and add timestamp to avoid overwriting
+        const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const fileName = `${Date.now()}_${safeName}`;
+        const filePath = `${appointmentId}/${fileName}`;
+
+        const { error } = await supabase.storage.from("attachments").upload(filePath, file);
+        if (error) {
+          console.error("Upload error for", file.name, error);
+          toast({ title: "Error al subir", description: `No se pudo subir ${file.name}`, variant: "destructive" });
+        } else {
+          successCount++;
+        }
+      }
+
+      if (successCount > 0) {
+        toast({ title: "Archivos subidos", description: `Se anexaron ${successCount} archivos a la cita correctamente.` });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUploading(false);
+      setSelectedFiles([]);
+      if (editingApt && editingApt.id === appointmentId) {
+        loadExistingFiles(appointmentId);
+      }
+    }
+  }
 
   const handleSave = async () => {
     if (!editingApt) return;
@@ -123,6 +252,9 @@ const AppointmentsTab = () => {
         .eq("id", editingApt.id);
 
       if (error) throw error;
+
+      // Try to upload pending files if any
+      await uploadFiles(editingApt.id);
 
       toast({ title: "Cita actualizada", description: "Los cambios han sido guardados." });
       setEditingApt(null);
@@ -170,7 +302,7 @@ const AppointmentsTab = () => {
       const localDate = new Date(`${newForm.appointment_date}T${newForm.appointment_time}`);
       const utcString = localDate.toISOString();
 
-      const { error } = await supabase.from("appointments").insert({
+      const { data, error } = await supabase.from("appointments").insert({
         patient_name: newForm.patient_name,
         phone_number: newForm.phone_number,
         appointment_date: utcString,
@@ -178,9 +310,14 @@ const AppointmentsTab = () => {
         status: "pending",
         reminder_sent: false,
         notes: newForm.notes,
-      });
+      }).select();
 
       if (error) throw error;
+
+      // Try to upload files if any, to the newly created appointment
+      if (data && data[0]) {
+        await uploadFiles(data[0].id);
+      }
 
       toast({ title: "Cita creada", description: "La nueva cita se ha agendado exitosamente." });
       setIsNewDialogOpen(false);
@@ -422,6 +559,89 @@ const AppointmentsTab = () => {
                 rows={4}
               />
             </div>
+
+            {/* Archivos Adjuntos - Editar */}
+            <div className="grid grid-cols-4 items-start gap-4 pt-2 border-t mt-2">
+              <label className="text-right text-sm font-medium pt-2 flex items-center justify-end gap-1">
+                <Paperclip className="w-4 h-4" /> Adjuntos
+              </label>
+              <div className="col-span-3 space-y-3">
+
+                {/* Lista de archivos existentes */}
+                {existingFiles.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground font-medium">Archivos guardados:</p>
+                    <div className="flex flex-col gap-2">
+                      {existingFiles.map((file, idx) => (
+                        <div key={idx} className="flex items-center justify-between p-2 rounded-md bg-muted/30 border text-sm">
+                          <a
+                            href={file.publicUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 truncate text-primary hover:underline"
+                          >
+                            <FileText className="w-4 h-4 shrink-0" />
+                            <span className="truncate">{file.name.substring(file.name.indexOf('_') + 1)}</span>
+                          </a>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="w-7 h-7 hover:text-destructive"
+                              onClick={() => deleteExistingFile(file.name)}
+                              title="Eliminar archivo"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seleccionar nuevos archivos */}
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground font-medium flex items-center justify-between">
+                    <span>Subir nuevos archivos (Max 5):</span>
+                    <span>{existingFiles.length + selectedFiles.length} / 5</span>
+                  </p>
+                  <Input
+                    id="edit-attachments"
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
+                    disabled={existingFiles.length + selectedFiles.length >= MAX_FILES}
+                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.xml"
+                    className="text-xs file:text-xs file:font-semibold file:bg-primary/10 file:text-primary file:border-0 file:rounded-md file:mr-2"
+                  />
+
+                  {/* Lista de archivos a subir */}
+                  {selectedFiles.length > 0 && (
+                    <div className="flex flex-col gap-2 mt-2">
+                      {selectedFiles.map((file, idx) => (
+                        <div key={idx} className="flex items-center justify-between p-2 rounded-md bg-amber-50 border border-amber-100 text-sm">
+                          <div className="flex items-center gap-2 truncate text-amber-900">
+                            <FileText className="w-4 h-4 shrink-0" />
+                            <span className="truncate">{file.name}</span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="w-6 h-6 shrink-0 hover:text-destructive text-amber-900/50"
+                            onClick={() => removeSelectedFile(idx)}
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      ))}
+                      <p className="text-xs text-amber-600 font-medium">Estos archivos se subirán al guardar.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
           </div>
           <div className="flex flex-col md:flex-row justify-between gap-3 mt-4 border-t pt-4">
             <Button variant="destructive" onClick={confirmDelete} disabled={isSaving} className="w-full md:w-auto order-3 md:order-1">
@@ -573,6 +793,52 @@ const AppointmentsTab = () => {
                   rows={3}
                 />
               </div>
+
+              {/* Archivos Adjuntos - Nueva Cita */}
+              <div className="grid grid-cols-4 items-start gap-4 pt-2 border-t mt-2">
+                <label className="text-right text-sm font-medium pt-2 flex items-center justify-end gap-1">
+                  <Paperclip className="w-4 h-4" /> Adjuntos
+                </label>
+                <div className="col-span-3 space-y-3">
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground font-medium flex items-center justify-between">
+                      <span>Seleccionar archivos (Max 5):</span>
+                      <span>{selectedFiles.length} / 5</span>
+                    </p>
+                    <Input
+                      id="new-attachments"
+                      type="file"
+                      multiple
+                      onChange={handleFileChange}
+                      disabled={selectedFiles.length >= MAX_FILES}
+                      accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.xml"
+                      className="text-xs file:text-xs file:font-semibold file:bg-primary/10 file:text-primary file:border-0 file:rounded-md file:mr-2"
+                    />
+
+                    {selectedFiles.length > 0 && (
+                      <div className="flex flex-col gap-2 mt-2">
+                        {selectedFiles.map((file, idx) => (
+                          <div key={idx} className="flex items-center justify-between p-2 rounded-md bg-muted/30 border text-sm">
+                            <div className="flex items-center gap-2 truncate text-foreground">
+                              <FileText className="w-4 h-4 shrink-0" />
+                              <span className="truncate">{file.name}</span>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="w-6 h-6 shrink-0 hover:text-destructive text-muted-foreground"
+                              onClick={() => removeSelectedFile(idx)}
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
           <DialogFooter className="mt-2 border-t pt-4">
