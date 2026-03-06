@@ -82,13 +82,22 @@ const LandingPage = () => {
             <motion.div
               custom={0}
               variants={fadeUp}
+              className="mb-6 font-black tracking-tighter text-5xl md:text-7xl"
+            >
+              <span className="bg-gradient-to-r from-fuchsia-500 to-pink-500 text-transparent bg-clip-text">
+                i-Asistan
+              </span>
+            </motion.div>
+            <motion.div
+              custom={1}
+              variants={fadeUp}
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary text-secondary-foreground text-sm font-medium mb-6"
             >
               <MessageCircle className="w-4 h-4" />
               Asistente Virtual con IA
             </motion.div>
             <motion.h1
-              custom={1}
+              custom={2}
               variants={fadeUp}
               className="text-4xl md:text-6xl font-extrabold text-foreground leading-tight mb-6"
             >
@@ -97,14 +106,14 @@ const LandingPage = () => {
               con inteligencia artificial
             </motion.h1>
             <motion.p
-              custom={2}
+              custom={3}
               variants={fadeUp}
               className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
             >
               Dental Asistan automatiza la atención al paciente, agenda citas y envía
               recordatorios. Todo desde WhatsApp, sin complicaciones.
             </motion.p>
-            <motion.div custom={3} variants={fadeUp} className="flex items-center justify-center gap-4">
+            <motion.div custom={4} variants={fadeUp} className="flex items-center justify-center gap-4">
               <Link to="/auth?mode=register">
                 <Button size="lg" className="px-8 text-base font-semibold">
                   Crear Cuenta
