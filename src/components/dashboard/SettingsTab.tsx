@@ -185,8 +185,8 @@ const SettingsTab = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           {schedule.map((day, idx) => (
-            <div key={day.day} className="flex items-center justify-between gap-4 p-3 bg-muted/40 rounded-lg border border-border/50">
-              <div className="flex items-center gap-3 w-32">
+            <div key={day.day} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-3 bg-muted/40 rounded-lg border border-border/50">
+              <div className="flex items-center gap-3 sm:w-32 shrink-0">
                 <Switch
                   checked={day.active}
                   onCheckedChange={(val) => updateSchedule(idx, "active", val)}
@@ -196,7 +196,7 @@ const SettingsTab = () => {
                 </Label>
               </div>
 
-              <div className="flex items-center gap-2 flex-1 max-w-[320px]">
+              <div className="flex items-center gap-2 w-full sm:flex-1 sm:max-w-[320px]">
                 <Select
                   value={day.start}
                   onValueChange={(val) => updateSchedule(idx, "start", val)}

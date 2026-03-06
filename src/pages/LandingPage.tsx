@@ -59,7 +59,7 @@ const LandingPage = () => {
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <Link to="/auth">
-              <Button variant="ghost" size="sm">
+              <Button variant="outline" size="sm">
                 Iniciar Sesión
               </Button>
             </Link>
