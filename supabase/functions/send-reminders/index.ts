@@ -40,6 +40,25 @@ serve(async (req: any) => {
     const clinicTimezone = settings.timezone || "America/Mexico_City";
     const clinicName = settings.clinic_name || "la clínica";
 
+    // --- NEW LOGIC: Auto-complete past appointments ---
+    // Buscar citas cuyo appointment_date sea menor al instante actual (UTC) y marcarlas como "completed"
+    const nowUTC = new Date().toISOString();
+
+    const { data: updatedAppointments, error: updatePastError } = await supabase
+      .from("appointments")
+      .update({ status: "completed" })
+      .in("status", ["pending", "confirmed"])
+      .lt("appointment_date", nowUTC)
+      .select("id");
+
+    if (updatePastError) {
+      console.error("Error auto-completing past appointments:", updatePastError);
+      // No lanzamos error para seguir con los recordatorios aunque esto falle
+    } else {
+      console.log(`Auto-completed ${updatedAppointments?.length || 0} past appointments.`);
+    }
+    // ----------------------------------------------------
+
     // 3. Calculate "tomorrow's" date boundaries in the clinic's local timezone
     // We want to find appointments happening anytime 'tomorrow' local time.
 
