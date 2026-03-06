@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calendar, Clock, XCircle, CheckCircle2, Loader2, Trash2 } from "lucide-react";
+import { Calendar, Clock, XCircle, CheckCircle2, Loader2, Trash2, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -38,12 +38,21 @@ const AppointmentsTab = () => {
   const [editingApt, setEditingApt] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     patient_name: "",
     phone_number: "",
     appointment_date: "",
     appointment_time: "",
     status: "",
+    notes: "",
+  });
+  const [newForm, setNewForm] = useState({
+    patient_name: "",
+    phone_number: "",
+    appointment_date: "",
+    appointment_time: "",
+    appointment_type: "",
     notes: "",
   });
 
@@ -151,6 +160,47 @@ const AppointmentsTab = () => {
     }
   };
 
+  const handleCreate = async () => {
+    if (!newForm.patient_name || !newForm.phone_number || !newForm.appointment_date || !newForm.appointment_time) {
+      toast({ title: "Faltan datos", description: "Por favor completa el nombre, teléfono, fecha y hora.", variant: "destructive" });
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const localDate = new Date(`${newForm.appointment_date}T${newForm.appointment_time}`);
+      const utcString = localDate.toISOString();
+
+      const { error } = await supabase.from("appointments").insert({
+        patient_name: newForm.patient_name,
+        phone_number: newForm.phone_number,
+        appointment_date: utcString,
+        appointment_type: newForm.appointment_type || "Cita General",
+        status: "pending",
+        reminder_sent: false,
+        notes: newForm.notes,
+      });
+
+      if (error) throw error;
+
+      toast({ title: "Cita creada", description: "La nueva cita se ha agendado exitosamente." });
+      setIsNewDialogOpen(false);
+      setNewForm({
+        patient_name: "",
+        phone_number: "",
+        appointment_date: "",
+        appointment_time: "",
+        appointment_type: "",
+        notes: "",
+      });
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+    } catch (err: any) {
+      console.error(err);
+      toast({ title: "Error", description: "No se pudo crear la cita.", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -170,8 +220,11 @@ const AppointmentsTab = () => {
       </div>
 
       <Card className="shadow-card">
-        <CardHeader className="pb-3 border-b">
-          <CardTitle className="text-base font-semibold">Próximas Citas</CardTitle>
+        <CardHeader className="pb-3 border-b flex flex-row items-center justify-between">
+          <CardTitle className="text-base font-semibold mt-1">Próximas Citas</CardTitle>
+          <Button onClick={() => setIsNewDialogOpen(true)} size="sm" className="gap-2">
+            <Plus className="w-4 h-4" /> Nueva Cita
+          </Button>
         </CardHeader>
         <CardContent className="p-0">
           {appointments.length === 0 ? (
@@ -416,6 +469,121 @@ const AppointmentsTab = () => {
               {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : "Sí, eliminar"}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Nueva Cita */}
+      <Dialog open={isNewDialogOpen} onOpenChange={setIsNewDialogOpen}>
+        <DialogContent className="sm:max-w-[425px] flex flex-col max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle>Nueva Cita</DialogTitle>
+            <DialogDescription className="sr-only">
+              Completa los datos para agendar una nueva cita en el sistema.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto pr-1 -mr-1">
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label className="text-right text-sm font-medium">Paciente *</label>
+                <Input
+                  id="new-patient-name"
+                  name="new-patient-name"
+                  placeholder="Ej. Juan Pérez"
+                  value={newForm.patient_name}
+                  onChange={(e) => setNewForm({ ...newForm, patient_name: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label className="text-right text-sm font-medium">Teléfono *</label>
+                <Input
+                  id="new-phone-number"
+                  name="new-phone-number"
+                  placeholder="Ej. +549112345678"
+                  value={newForm.phone_number}
+                  onChange={(e) => setNewForm({ ...newForm, phone_number: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label className="text-right text-sm font-medium">Servicio</label>
+                <Input
+                  id="new-appointment-type"
+                  name="new-appointment-type"
+                  placeholder="Ej. Limpieza (Opcional)"
+                  value={newForm.appointment_type}
+                  onChange={(e) => setNewForm({ ...newForm, appointment_type: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label className="text-right text-sm font-medium">Día *</label>
+                <Input
+                  id="new-appointment-date"
+                  name="new-appointment-date"
+                  type="date"
+                  value={newForm.appointment_date}
+                  onChange={(e) => setNewForm({ ...newForm, appointment_date: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label className="text-right text-sm font-medium">Hora *</label>
+                <div className="col-span-3 flex items-center gap-2">
+                  <Select
+                    value={newForm.appointment_time.split(":")[0] || ""}
+                    onValueChange={(val) => setNewForm(prev => ({ ...prev, appointment_time: `${val}:${prev.appointment_time.split(":")[1] || "00"}` }))}
+                  >
+                    <SelectTrigger className="w-[80px]">
+                      <SelectValue placeholder="HH" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {Array.from({ length: 24 }).map((_, i) => {
+                        const h = i.toString().padStart(2, "0");
+                        return <SelectItem key={h} value={h}>{h}</SelectItem>;
+                      })}
+                    </SelectContent>
+                  </Select>
+                  <span className="font-bold text-muted-foreground">:</span>
+                  <Select
+                    value={newForm.appointment_time.split(":")[1] || ""}
+                    onValueChange={(val) => setNewForm(prev => ({ ...prev, appointment_time: `${prev.appointment_time.split(":")[0] || "00"}:${val}` }))}
+                  >
+                    <SelectTrigger className="w-[80px]">
+                      <SelectValue placeholder="MM" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {Array.from({ length: 12 }).map((_, i) => {
+                        const m = (i * 5).toString().padStart(2, "0");
+                        return <SelectItem key={m} value={m}>{m}</SelectItem>;
+                      })}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-start gap-4">
+                <label className="text-right text-sm font-medium pt-2">Notas</label>
+                <Textarea
+                  id="new-notes"
+                  name="new-notes"
+                  placeholder="Notas adicionales..."
+                  className="col-span-3 resize-none"
+                  value={newForm.notes}
+                  onChange={(e) => setNewForm({ ...newForm, notes: e.target.value })}
+                  rows={3}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="mt-2 border-t pt-4">
+            <Button variant="outline" onClick={() => setIsNewDialogOpen(false)} disabled={isSaving}>
+              Cancelar
+            </Button>
+            <Button onClick={handleCreate} disabled={isSaving}>
+              {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Crear Cita
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
