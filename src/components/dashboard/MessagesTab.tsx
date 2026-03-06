@@ -291,7 +291,7 @@ const MessagesTab = () => {
               <div className="space-y-3 max-w-2xl mx-auto pb-4">
                 {conversationMessages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-start" : "justify-end"}`}>
-                    <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm ${msg.sender === "user" ? "bg-muted text-foreground rounded-bl-md" : "bg-primary text-primary-foreground rounded-br-md"}`}>
+                    <div className={`max-w-[85%] md:max-w-[75%] break-words rounded-2xl px-4 py-2.5 text-sm ${msg.sender === "user" ? "bg-muted text-foreground rounded-bl-md" : "bg-primary text-primary-foreground rounded-br-md"}`}>
                       {msg.media_url && (
                         <a href={msg.media_url} target="_blank" rel="noopener noreferrer" className="block mb-2">
                           <img
@@ -303,7 +303,7 @@ const MessagesTab = () => {
                         </a>
                       )}
                       {msg.message_content && !msg.message_content.startsWith("📷") && (
-                        <p>{msg.message_content}</p>
+                        <p className="whitespace-pre-wrap break-words">{msg.message_content}</p>
                       )}
                       <p className={`text-[10px] mt-1 ${msg.sender === "user" ? "text-muted-foreground" : "text-primary-foreground/70"}`}>
                         {new Date(msg.received_at).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}
