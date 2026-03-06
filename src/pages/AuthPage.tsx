@@ -75,8 +75,12 @@ const AuthPage = () => {
           <div className="w-12 h-12 rounded-xl gradient-hero flex items-center justify-center mx-auto mb-4">
             <MessageCircle className="w-6 h-6 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Dental Asistan</h1>
-          <p className="text-muted-foreground text-sm mt-1">Tu asistente inteligente para clínicas</p>
+          <h1 className="text-2xl mt-2 font-bold">
+            <span className="bg-gradient-to-r from-fuchsia-500 to-pink-500 text-transparent bg-clip-text">
+              <span className="font-extrabold">i</span>-asistan
+            </span>
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">Tu asistente inteligente para negocios</p>
         </div>
 
         <Card className="shadow-elevated border">
@@ -115,7 +119,7 @@ const AuthPage = () => {
                 <Label htmlFor="email" className="text-sm font-medium">Correo electrónico</Label>
                 <div className="relative mt-1.5">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input id="email" name="email" type="email" placeholder="doctor@clinica.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" />
+                  <Input id="email" name="email" type="email" placeholder="contacto@negocio.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" />
                 </div>
               </div>
               <div>

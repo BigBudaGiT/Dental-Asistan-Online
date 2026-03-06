@@ -53,9 +53,13 @@ const LandingPage = () => {
         <div className="container mx-auto flex items-center justify-between h-16 px-4">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 shrink-0 rounded-lg gradient-hero flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">DA</span>
+              <span className="text-primary-foreground font-bold text-sm">iA</span>
             </div>
-            <span className="font-bold text-lg text-foreground hidden sm:block">Dental Asistan</span>
+            <span className="font-bold text-lg hidden sm:block">
+              <span className="bg-gradient-to-r from-fuchsia-500 to-pink-500 text-transparent bg-clip-text">
+                <span className="font-extrabold">i</span>-asistan
+              </span>
+            </span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <Link to="/auth">
@@ -85,7 +89,7 @@ const LandingPage = () => {
               className="mb-6 font-black tracking-tighter text-5xl md:text-7xl"
             >
               <span className="bg-gradient-to-r from-fuchsia-500 to-pink-500 text-transparent bg-clip-text">
-                i-Asistan
+                <span className="font-extrabold">i</span>-asistan
               </span>
             </motion.div>
             <motion.div
@@ -110,7 +114,9 @@ const LandingPage = () => {
               variants={fadeUp}
               className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
             >
-              Dental Asistan automatiza la atención al paciente, agenda citas y envía
+              <span className="bg-gradient-to-r from-fuchsia-500 to-pink-500 text-transparent bg-clip-text font-semibold">
+                <span className="font-extrabold">i</span>-asistan
+              </span> automatiza la atención, agenda citas y envía
               recordatorios. Todo desde WhatsApp, sin complicaciones.
             </motion.p>
             <motion.div custom={4} variants={fadeUp} className="flex items-center justify-center gap-4">
@@ -140,10 +146,10 @@ const LandingPage = () => {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Todo lo que tu clínica necesita
+              Todo lo que tu negocio necesita
             </h2>
             <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Herramientas inteligentes para modernizar la gestión de tu consultorio dental.
+              Herramientas inteligentes para modernizar la gestión de tu negocio.
             </p>
           </motion.div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -178,7 +184,7 @@ const LandingPage = () => {
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-            ¿Listo para transformar tu clínica?
+            ¿Listo para transformar tu negocio?
           </h2>
           <p className="text-primary-foreground/80 text-lg mb-8">
             Únete a cientos de profesionales que ya automatizan sus citas con IA.
@@ -196,12 +202,12 @@ const LandingPage = () => {
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded gradient-hero flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xs">DA</span>
+              <span className="text-primary-foreground font-bold text-xs">iA</span>
             </div>
-            <span className="text-sm font-medium text-muted-foreground">Dental Asistan © 2026</span>
+            <span className="text-sm font-medium text-muted-foreground">i-asistan © 2026</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            Automatiza tu clínica con inteligencia artificial.
+            Automatiza tu negocio con inteligencia artificial.
           </p>
         </div>
       </footer>

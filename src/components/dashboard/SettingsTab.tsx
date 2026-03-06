@@ -143,13 +143,13 @@ const SettingsTab = () => {
     <div className="max-w-3xl space-y-6 pb-12">
       <Card className="shadow-card">
         <CardHeader>
-          <CardTitle className="text-base">Datos de la Clínica</CardTitle>
+          <CardTitle className="text-base">Datos del Negocio</CardTitle>
           <CardDescription>Información básica y de contacto.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-sm font-medium">Nombre de la Clínica</Label>
+              <Label className="text-sm font-medium">Nombre del Negocio</Label>
               <Input id="clinic-name" name="clinic-name" className="mt-1.5" value={form.clinic_name} onChange={(e) => handleChange("clinic_name", e.target.value)} />
             </div>
             <div>
@@ -172,7 +172,7 @@ const SettingsTab = () => {
             </div>
           </div>
           <div>
-            <Label className="text-sm font-medium">Acerca de la Clínica</Label>
+            <Label className="text-sm font-medium">Acerca del Negocio</Label>
             <Textarea className="mt-1.5" rows={3} value={form.about_clinic} onChange={(e) => handleChange("about_clinic", e.target.value)} />
           </div>
         </CardContent>
@@ -181,7 +181,7 @@ const SettingsTab = () => {
       <Card className="shadow-card">
         <CardHeader>
           <CardTitle className="text-base">Horarios de Atención</CardTitle>
-          <CardDescription>Configura los días y horarios en los que la clínica recibe pacientes.</CardDescription>
+          <CardDescription>Configura los días y horarios en los que el negocio atiende al público.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {schedule.map((day, idx) => (
@@ -235,7 +235,7 @@ const SettingsTab = () => {
       <Card className="shadow-card">
         <CardHeader>
           <CardTitle className="text-base">Servicios</CardTitle>
-          <CardDescription>Lista de tratamientos que ofrece tu clínica. La IA los usará para ofrecerlos u organizar turnos.</CardDescription>
+          <CardDescription>Lista de servicios o tratamientos que ofrece tu negocio. La IA los usará para ofrecerlos u organizar turnos.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">

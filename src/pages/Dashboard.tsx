@@ -55,9 +55,9 @@ const Dashboard = () => {
       `}>
         <div className="h-16 flex items-center gap-2 px-4 border-b shrink-0">
           <div className="w-8 h-8 rounded-lg gradient-hero flex items-center justify-center shrink-0">
-            <span className="text-primary-foreground font-bold text-xs">DA</span>
+            <span className="text-primary-foreground font-bold text-xs">iA</span>
           </div>
-          {sidebarOpen && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-bold text-foreground text-sm">Dental Asistan</motion.span>}
+          {sidebarOpen && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-bold text-sm"><span className="bg-gradient-to-r from-fuchsia-500 to-pink-500 text-transparent bg-clip-text"><span className="font-extrabold">i</span>-asistan</span></motion.span>}
         </div>
         <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
           {tabs.map((tab) => (
