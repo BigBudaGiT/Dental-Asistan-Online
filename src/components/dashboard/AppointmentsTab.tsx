@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import * as XLSX from "xlsx";
 import {
   Dialog,
   DialogContent,
@@ -97,6 +98,57 @@ const AppointmentsTab = () => {
     { label: "Confirmadas", value: confirmedCount.toString(), icon: CheckCircle2, color: "text-success" },
     { label: "Canceladas", value: cancelledCount.toString(), icon: XCircle, color: "text-destructive" },
   ];
+
+  const exportToExcel = () => {
+    if (appointments.length === 0) {
+      toast({ title: "Sin datos", description: "No hay citas para exportar.", variant: "destructive" });
+      return;
+    }
+
+    const exportData = appointments.map(apt => {
+      const dateObj = new Date(apt.appointment_date);
+      const dateStr = dateObj.toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" });
+      const timeStr = dateObj.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit", hour12: false });
+
+      const statusMap: Record<string, string> = {
+        pending: "Pendiente",
+        confirmed: "Confirmada",
+        completed: "Completada",
+        cancelled: "Cancelada"
+      };
+
+      return {
+        "Paciente": apt.patient_name,
+        "Teléfono": apt.phone_number,
+        "Fecha": dateStr,
+        "Hora": `${timeStr} Hs`,
+        "Servicio": apt.appointment_type || "Cita General",
+        "Estado": statusMap[apt.status] || apt.status,
+        "Avisado": apt.reminder_sent ? "Sí" : "No",
+        "Notas": apt.notes || ""
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Citas");
+
+    // Ajustar ancho de columnas
+    const colWidths = [
+      { wch: 25 }, // Paciente
+      { wch: 15 }, // Teléfono
+      { wch: 20 }, // Fecha
+      { wch: 10 }, // Hora
+      { wch: 20 }, // Servicio
+      { wch: 15 }, // Estado
+      { wch: 10 }, // Avisado
+      { wch: 40 }, // Notas
+    ];
+    worksheet["!cols"] = colWidths;
+
+    XLSX.writeFile(workbook, `Agenda_Citas_${new Date().toISOString().split('T')[0]}.xlsx`);
+    toast({ title: "Exportación exitosa", description: "El archivo Excel se ha descargado correctamente." });
+  };
 
   const handleEdit = (apt: any) => {
     // Convierte el ISO "2024-03-20T14:30:00Z" a fecha y hora locales para los inputs
@@ -359,9 +411,14 @@ const AppointmentsTab = () => {
       <Card className="shadow-card">
         <CardHeader className="pb-3 border-b flex flex-row items-center justify-between">
           <CardTitle className="text-base font-semibold mt-1">Próximas Citas</CardTitle>
-          <Button onClick={() => setIsNewDialogOpen(true)} size="sm" className="gap-2">
-            <Plus className="w-4 h-4" /> Nueva Cita
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={exportToExcel} size="sm" variant="outline" className="gap-2">
+              <Download className="w-4 h-4 hidden sm:inline" /> Exportar Excel
+            </Button>
+            <Button onClick={() => setIsNewDialogOpen(true)} size="sm" className="gap-2">
+              <Plus className="w-4 h-4 hidden sm:inline" /> Nueva Cita
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           {appointments.length === 0 ? (
