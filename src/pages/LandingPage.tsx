@@ -205,7 +205,7 @@ const LandingPage = () => {
               <span className="text-primary-foreground font-bold text-xs">iA</span>
             </div>
             <span className="text-sm font-medium text-muted-foreground">
-              i-asistan © 2026 creado por{" "}
+              i-asistan © 2026 -{" "}
               <a
                 href="https://www.bigbuda.com.ar"
                 target="_blank"
