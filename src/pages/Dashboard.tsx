@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { MessageCircle, Calendar, Settings, LogOut, Menu, Users, Shield, Clock } from "lucide-react";
+import { MessageCircle, Calendar, Settings, LogOut, Menu, Users, Shield, Clock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -141,8 +141,9 @@ const Dashboard = () => {
         </nav>
         <div className="p-2 border-t shrink-0 flex flex-col gap-2">
           {sidebarOpen && userName && (
-            <div className="px-3 py-2 text-xs font-medium text-muted-foreground truncate" title={userName}>
-              {userName}
+            <div className="px-3 py-2 text-xs font-medium text-muted-foreground truncate flex items-center gap-2" title={userName}>
+              <User className="w-4 h-4 shrink-0" />
+              <span className="truncate">{userName}</span>
             </div>
           )}
           <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
