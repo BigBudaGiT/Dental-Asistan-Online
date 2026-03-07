@@ -59,6 +59,22 @@ const AdminTab = () => {
         }
     };
 
+    const deleteUser = async (id: string) => {
+        if (!window.confirm("¿Estás completamente seguro de borrar esta cuenta? Esta acción no se puede deshacer y borrará todos sus datos.")) return;
+
+        const { data, error } = await supabase.functions.invoke('delete-user', {
+            body: { userIdToDelete: id }
+        });
+
+        if (error || data?.error) {
+            console.error("Error al borrar usuario:", error || data?.error);
+            toast({ title: "Error", description: data?.error || "Fallo al intentar borrar el usuario de la DB.", variant: "destructive" });
+        } else {
+            toast({ title: "Usuario Eliminado", description: "La cuenta ha sido borrada permanentemente." });
+            setProfiles(profiles.filter(p => p.id !== id));
+        }
+    };
+
     const getStatusBadge = (status: string) => {
         switch (status) {
             case "approved":
@@ -137,6 +153,15 @@ const AdminTab = () => {
                                             onClick={() => updateRole(profile.id, profile.role === 'admin' ? 'user' : 'admin')}
                                         >
                                             {profile.role === 'admin' ? 'Quitar Admin' : 'Hacer Admin'}
+                                        </Button>
+
+                                        <Button
+                                            size="sm"
+                                            variant="destructive"
+                                            onClick={() => deleteUser(profile.id)}
+                                            title="Borrar completamente esta cuenta de la base de datos"
+                                        >
+                                            Borrar
                                         </Button>
                                     </div>
                                 </div>
