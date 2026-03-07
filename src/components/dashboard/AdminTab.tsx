@@ -145,19 +145,21 @@ const AdminTab = () => {
                                             </>
                                         )}
 
-                                        {profile.status === 'approved' && (
+                                        {profile.status === 'approved' && profile.id !== currentUserId && (
                                             <Button size="sm" variant="ghost" onClick={() => updateStatus(profile.id, 'pending')} className="text-muted-foreground">
                                                 Suspender
                                             </Button>
                                         )}
 
-                                        <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={() => updateRole(profile.id, profile.role === 'admin' ? 'user' : 'admin')}
-                                        >
-                                            {profile.role === 'admin' ? 'Quitar Admin' : 'Hacer Admin'}
-                                        </Button>
+                                        {profile.id !== currentUserId && (
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => updateRole(profile.id, profile.role === 'admin' ? 'user' : 'admin')}
+                                            >
+                                                {profile.role === 'admin' ? 'Quitar Admin' : 'Hacer Admin'}
+                                            </Button>
+                                        )}
 
                                         {profile.id !== currentUserId && (
                                             <Button
