@@ -23,17 +23,25 @@ const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
   const navigate = useNavigate();
 
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) navigate("/auth");
-      else setUserEmail(session.user.email ?? null);
+      else {
+        const name = session.user.user_metadata?.full_name;
+        setUserName(name || session.user.email || "Usuario");
+      }
     });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       if (!session) navigate("/auth");
-      else setUserEmail(session.user.email ?? null);
+      else {
+        const name = session.user.user_metadata?.full_name;
+        setUserName(name || session.user.email || "Usuario");
+      }
     });
+
     return () => subscription.unsubscribe();
   }, [navigate]);
 
@@ -79,9 +87,9 @@ const Dashboard = () => {
           ))}
         </nav>
         <div className="p-2 border-t shrink-0 flex flex-col gap-2">
-          {sidebarOpen && userEmail && (
-            <div className="px-3 py-2 text-xs font-medium text-muted-foreground truncate" title={userEmail}>
-              {userEmail}
+          {sidebarOpen && userName && (
+            <div className="px-3 py-2 text-xs font-medium text-muted-foreground truncate" title={userName}>
+              {userName}
             </div>
           )}
           <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
