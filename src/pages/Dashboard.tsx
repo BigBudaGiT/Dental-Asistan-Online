@@ -23,12 +23,16 @@ const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
   const navigate = useNavigate();
 
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) navigate("/auth");
+      else setUserEmail(session.user.email ?? null);
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       if (!session) navigate("/auth");
+      else setUserEmail(session.user.email ?? null);
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
@@ -74,7 +78,12 @@ const Dashboard = () => {
             </button>
           ))}
         </nav>
-        <div className="p-2 border-t shrink-0">
+        <div className="p-2 border-t shrink-0 flex flex-col gap-2">
+          {sidebarOpen && userEmail && (
+            <div className="px-3 py-2 text-xs font-medium text-muted-foreground truncate" title={userEmail}>
+              {userEmail}
+            </div>
+          )}
           <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
             <LogOut className="w-5 h-5 shrink-0" />
             {sidebarOpen && <span>Salir</span>}
