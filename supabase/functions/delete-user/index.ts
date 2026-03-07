@@ -21,15 +21,16 @@ serve(async (req) => {
             })
         }
 
+        const jwt = authHeader.replace('Bearer ', '')
         const supabaseClient = createClient(
             Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-            { global: { headers: { Authorization: authHeader } } }
+            Deno.env.get('SUPABASE_ANON_KEY') ?? ''
         )
 
-        const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
+        const { data: { user }, error: userError } = await supabaseClient.auth.getUser(jwt)
 
         if (userError || !user) {
+            console.error("Auth error:", userError)
             return new Response(JSON.stringify({ error: 'Invalid user token' }), {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 status: 401,
@@ -85,7 +86,7 @@ serve(async (req) => {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
         })
-    } catch (error) {
+    } catch (error: any) {
         return new Response(JSON.stringify({ error: error.message }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400,

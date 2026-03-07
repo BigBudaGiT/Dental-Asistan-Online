@@ -17,6 +17,7 @@ type UserProfile = {
 const AdminTab = () => {
     const [profiles, setProfiles] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(true);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const { toast } = useToast();
 
     const fetchProfiles = async () => {
@@ -36,6 +37,9 @@ const AdminTab = () => {
     };
 
     useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setCurrentUserId(session?.user?.id || null);
+        });
         fetchProfiles();
     }, []);
 
@@ -155,14 +159,16 @@ const AdminTab = () => {
                                             {profile.role === 'admin' ? 'Quitar Admin' : 'Hacer Admin'}
                                         </Button>
 
-                                        <Button
-                                            size="sm"
-                                            variant="destructive"
-                                            onClick={() => deleteUser(profile.id)}
-                                            title="Borrar completamente esta cuenta de la base de datos"
-                                        >
-                                            Borrar
-                                        </Button>
+                                        {profile.id !== currentUserId && (
+                                            <Button
+                                                size="sm"
+                                                variant="destructive"
+                                                onClick={() => deleteUser(profile.id)}
+                                                title="Borrar completamente esta cuenta de la base de datos"
+                                            >
+                                                Borrar
+                                            </Button>
+                                        )}
                                     </div>
                                 </div>
                             ))}
